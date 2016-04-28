@@ -116,8 +116,8 @@ class SubGraph : Node {
 
 class Edge {
 	const(string) name;
-	DynamicArray!string from;
-	DynamicArray!string to;
+	const(string) from;
+	const(string) to;
 	string label;
 	string arrowStyleFrom;
 	string arrowStyleTo;
@@ -125,8 +125,9 @@ class Edge {
 
 	this(in string name, in string from, in string to) {
 		this.name = name;
+		this.from = from;
+		this.to = to;
 	}
-
 }
 
 private void splitString(O)(ref O or, in string str) {
@@ -161,5 +162,16 @@ unittest {
 }
 
 unittest {
-	auto g = RCString!Graph();
+	auto g = new Graph();
+	auto a = g.get!SubGraph("a");
+	auto ab = a.get!SubGraph("b");
+	auto abc = ab.get!Node("c");
+
+	auto b = g.get!SubGraph("b");
+	auto bb = b.get!SubGraph("b");
+	auto bc = bb.get!SubGraph("c");
+
+	Edge e = g.get!Edge("ab_bbc", "a.b.c", "b.b.c");
+	assert(e.from == "abc", e.from);
+	assert(e.to == "bbc__dummy", e.to);
 }
