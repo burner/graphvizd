@@ -50,7 +50,6 @@ class Graph {
 		return app.data;
 	}
 
-
 	T get(T)(in string name, in string from = "", in string to = "") 
 			if(is(T == Edge)) 
 	{
@@ -77,7 +76,6 @@ class Graph {
 			this.nodes[name] = ret;
 			return ret;
 		}
-		
 	}
 }
 
@@ -147,6 +145,7 @@ unittest {
 	auto e = g.get!Edge("e", "a", "b");
 	assertThrown(g.get!Node("c"));
 	assert(n is g.get!Node("a"));
+	assert(e is g.get!Edge("e"));
 }
 
 unittest {
