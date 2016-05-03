@@ -51,7 +51,9 @@ class Graph {
 	}
 
 
-	T get(T)(in string name, in string from, in string to) if(is(T == Edge)) {
+	T get(T)(in string name, in string from = "", in string to = "") 
+			if(is(T == Edge)) 
+	{
 		firstEdgeCreated = true;
 		if(name in this.edges) {
 			return cast(T)this.edges[name];
@@ -144,6 +146,7 @@ unittest {
 	auto m = g.get!Node("b");
 	auto e = g.get!Edge("e", "a", "b");
 	assertThrown(g.get!Node("c"));
+	assert(n is g.get!Node("a"));
 }
 
 unittest {
