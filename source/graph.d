@@ -5,7 +5,7 @@ import containers.hashmap;
 import containers.dynamicarray;
 import containers.cyclicbuffer;
 
-immutable DummyString = "__dummy";
+public immutable DummyString = "__dummy";
 
 interface NodeInterface {
 	bool isAddingNodesAllowed() const;
@@ -17,8 +17,20 @@ class Graph : NodeInterface {
 	bool firstEdgeCreated = false;
 
 	string deapest(string path) const {
-		import std.array : appender;
+		import std.array : appender, Appender, empty;
 		import std.stdio : writeln;
+		void realPut(const Node ni, ref Appender!string app) {
+			import std.format : formattedWrite;
+			if(!app.data.empty) {
+				app.put("_");
+			}
+			if((cast(SubGraph)ni) !is null) {
+				app.formattedWrite("cluster_%s", ni.name);
+			} else {
+				app.formattedWrite("%s", ni.name);
+			}
+		}
+
 		CyclicBuffer!string split;
 		splitString(split, path);
 
@@ -26,9 +38,10 @@ class Graph : NodeInterface {
 			return "";
 		}
 
-		Rebindable!(const NodeInterface) next = this.nodes[split.front];
+		Rebindable!(const Node) next = cast(const Node)this.nodes[split.front];
 		auto app = appender!string();
-		app.put(split.front);
+		//app.put(split.front);
+		realPut(next.get(), app);
 		split.removeFront();
 
 		while(!split.empty && next !is null) {
@@ -37,8 +50,9 @@ class Graph : NodeInterface {
 				break;
 			} else {
 				if(split.front in sg.nodes) {
-					next = sg.nodes[split.front];
-					app.put(split.front);
+					next = cast(const Node)sg.nodes[split.front];
+					//app.put(split.front);
+					realPut(next.get(), app);
 					split.removeFront();
 				} else {
 					break;
@@ -50,13 +64,14 @@ class Graph : NodeInterface {
 		if(!split.empty || lastSG !is null) {
 			DummyNode dn = lastSG.get!DummyNode(DummyString);
 			assert(dn !is null);
-			app.put(dn.name);
+			//app.put(dn.name);
+			realPut(dn, app);
 		}
 
 		return app.data;
 	}
 
-	T get(T)(in string name, in string from = "", in string to = "") 
+	T get(T)(in string name, in string from, in string to) 
 			if(is(T == Edge)) 
 	{
 		firstEdgeCreated = true;
@@ -94,6 +109,8 @@ class Node : NodeInterface {
 	NodeInterface parent;
 	string label;
 	string shape;
+	string attributes;
+
 	this(in string name, NodeInterface parent) {
 		this.name = name;
 		this.parent = parent;
@@ -107,6 +124,9 @@ class Node : NodeInterface {
 class DummyNode : Node {
 	this(Node parent) {
 		super(DummyString, parent);
+		super.attributes = `width="0", style = invis`;
+		super.label = "";
+		super.shape = "none";
 	}
 }
 
@@ -182,16 +202,16 @@ unittest {
 unittest {
 	auto g = new Graph();
 	auto a = g.get!SubGraph("a");
-	assert(g.deapest("a") == "a__dummy");
+	assert(g.deapest("a") == "cluster_a___dummy");
 	auto b = a.get!Node("b");
-	assert(g.deapest("a.b") == "ab");
+	assert(g.deapest("a.b") == "cluster_a_b");
 	assert(g.deapest("c") == "");
 	auto c = a.get!SubGraph("c");
-	assert(g.deapest("a.c") == "ac__dummy");
-	assert(g.deapest("a.c.e") == "ac__dummy");
-	assert(g.deapest("a.d.e") == "a__dummy");
+	assert(g.deapest("a.c") == "cluster_a_cluster_c___dummy");
+	assert(g.deapest("a.c.e") == "cluster_a_cluster_c___dummy");
+	assert(g.deapest("a.d.e") == "cluster_a___dummy");
 	auto d = c.get!Node("d");
-	assert(g.deapest("a.c.d") == "acd");
+	assert(g.deapest("a.c.d") == "cluster_a_cluster_c_d");
 }
 
 unittest {
@@ -205,6 +225,6 @@ unittest {
 	auto bc = bb.get!SubGraph("c");
 
 	Edge e = g.get!Edge("ab_bbc", "a.b.c", "b.b.c");
-	assert(e.from == "abc", e.from);
-	assert(e.to == "bbc__dummy", e.to);
+	assert(e.from == "cluster_a_cluster_b_c", e.from);
+	assert(e.to == "cluster_b_cluster_b_cluster_c___dummy", e.to);
 }
