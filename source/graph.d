@@ -7,8 +7,12 @@ import containers.cyclicbuffer;
 
 immutable DummyString = "__dummy";
 
-class Graph {
-	HashMap!(string,Node) nodes;
+interface NodeInterface {
+	bool isAddingNodesAllowed() const;
+}
+
+class Graph : NodeInterface {
+	HashMap!(string,NodeInterface) nodes;
 	HashMap!(string,Edge) edges;
 	bool firstEdgeCreated = false;
 
@@ -22,7 +26,7 @@ class Graph {
 			return "";
 		}
 
-		Rebindable!(const Node) next = this.nodes[split.front];
+		Rebindable!(const NodeInterface) next = this.nodes[split.front];
 		auto app = appender!string();
 		app.put(split.front);
 		split.removeFront();
@@ -44,7 +48,9 @@ class Graph {
 
 		SubGraph lastSG = cast(SubGraph)next;
 		if(!split.empty || lastSG !is null) {
-			app.put(DummyString);
+			DummyNode dn = lastSG.get!DummyNode(DummyString);
+			assert(dn !is null);
+			app.put(dn.name);
 		}
 
 		return app.data;
@@ -67,25 +73,34 @@ class Graph {
 		if(name in this.nodes) {
 			return cast(T)this.nodes[name];
 		} else {
-			if(firstEdgeCreated) {
+			if(!this.isAddingNodesAllowed()) {
 				throw new Exception("Node's can't be created after the "
 					~ "first Edge has been created"
 				);
 			}
-			T ret = new T(name, null);
+			T ret = new T(name, this);
 			this.nodes[name] = ret;
 			return ret;
 		}
 	}
+
+	bool isAddingNodesAllowed() const {
+		return !this.firstEdgeCreated;
+	}
 }
 
-class Node {
+class Node : NodeInterface {
 	const(string) name;
-	Node parent;
+	NodeInterface parent;
 	string label;
-	this(in string name, Node parent) {
+	string shape;
+	this(in string name, NodeInterface parent) {
 		this.name = name;
 		this.parent = parent;
+	}
+
+	bool isAddingNodesAllowed() const {
+		assert(false, "This should never be called");
 	}
 }
 
@@ -96,21 +111,35 @@ class DummyNode : Node {
 }
 
 class SubGraph : Node {
-	HashMap!(string,Node) nodes;
+	HashMap!(string,NodeInterface) nodes;
 
-	this(in string name, Node parent) {
+	this(in string name, NodeInterface parent) {
+		assert(parent !is null);
 		super(name, parent);
-		this.nodes[DummyString] =  new Node(DummyString, this);
 	}
 
-	T get(T)(in string name) {
+	/*package*/ T get(T)(in string name) {
 		if(name in this.nodes) {
 			return cast(T)this.nodes[name];
 		} else {
-			T ret = new T(name, this);
+			static if(is(T == DummyNode)) {
+				T ret = new T(this);
+			} else {
+				if(!this.isAddingNodesAllowed()) {
+					throw new Exception("Node's can't be created after the "
+						~ "first Edge has been created"
+					);
+				}
+				T ret = new T(name, this);
+			}
 			this.nodes[name] = ret;
 			return ret;
 		}
+	}
+
+	override bool isAddingNodesAllowed() const {
+		assert(this.parent !is null);
+		return this.parent.isAddingNodesAllowed();
 	}
 }
 
@@ -142,10 +171,12 @@ unittest {
 	auto g = new Graph();
 	auto n = g.get!Node("a");
 	auto m = g.get!Node("b");
+	auto sg = g.get!SubGraph("sg");
 	auto e = g.get!Edge("e", "a", "b");
 	assertThrown(g.get!Node("c"));
 	assert(n is g.get!Node("a"));
 	assert(e is g.get!Edge("e"));
+	assertThrown(sg.get!Node("sgNode"));
 }
 
 unittest {
