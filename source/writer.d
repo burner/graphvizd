@@ -85,9 +85,9 @@ class Writer(O) {
 
 		this.formatPrefixClusterName();
 		if(this.nameStack.empty) {
-			gformat("%s [\n", n.name);
+			gformat("%s [\n", prepareName(n.name));
 		} else {
-			gformat("_%s [\n", n.name);
+			gformat("_%s [\n", prepareName(n.name));
 		}
 		this.writeLabel(n.label);
 		this.writeShape(n.shape);
@@ -102,9 +102,9 @@ class Writer(O) {
 
 		this.formatPrefixClusterName();
 		if(this.nameStack.empty) {
-			gformat("%s [\n", n.name);
+			gformat("%s [\n", prepareName(n.name));
 		} else {
-			gformat("_%s [\n", n.name);
+			gformat("_%s [\n", prepareName(n.name));
 		}
 		gformat(this.indent, "label=\"\"\n");
 		this.writeShape(n.shape);
@@ -122,23 +122,23 @@ class Writer(O) {
 
 		if(fromIsSubgraph && toIsSubgraph) {
 			gformat(this.indent, "%s -> %s [ltail=%s,lhead=%s]\n", 
-				e.from, e.to, 
-				e.from[0 .. $ - DummyString.length - 1],
-				e.to[0 .. $ - DummyString.length - 1]
+				prepareName(e.from), prepareName(e.to), 
+				prepareName(e.from[0 .. $ - DummyString.length - 1]),
+				prepareName(e.to[0 .. $ - DummyString.length - 1])
 			);
 		} else if(!fromIsSubgraph && toIsSubgraph) {
 			gformat(this.indent, "%s -> %s [lhead=%s]\n", 
-				e.from, e.to, 
-				e.to[0 .. $ - DummyString.length - 1],
+				prepareName(e.from), prepareName(e.to), 
+				prepareName(e.to[0 .. $ - DummyString.length - 1]),
 			);
 		} else if(fromIsSubgraph && !toIsSubgraph) {
 			gformat(this.indent, "%s -> %s [ltail=%s]\n", 
-				e.from, e.to, 
-				e.from[0 .. $ - DummyString.length - 1]
+				prepareName(e.from), prepareName(e.to), 
+				prepareName(e.from[0 .. $ - DummyString.length - 1])
 			);
 		} else {
 			gformat(this.indent, "%s -> %s\n", 
-				e.from, e.to, 
+				prepareName(e.from), prepareName(e.to),
 			);
 		}
 	}
@@ -203,14 +203,22 @@ class Writer(O) {
 
 	final void formatPrefixSubGraphName() {
 		gformat(this.indent, "subgraph ");
-		auto tmp = this.nameStack[].map!(a => format("cluster_%s", a));
+		auto tmp = this.nameStack[]
+			.map!(a => format("cluster_%s", prepareName(a)));
 		this.gformat("%s", tmp.joiner("_"));
 	}
 
 	final void formatPrefixClusterName() {
 		gformat(this.indent, "");
-		auto tmp = this.nameStack[].map!(a => format("cluster_%s", a));
+		auto tmp = this.nameStack[]
+			.map!(a => format("cluster_%s", prepareName(a)));
 		this.gformat("%s", tmp.joiner("_"));
+	}
+
+	static string prepareName(string name) {
+		import std.string : translate;
+		dchar[dchar] tt = [' ':'_', '\n':'_', '\t':'_'];
+		return translate(name, tt);
 	}
 }
 

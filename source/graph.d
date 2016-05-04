@@ -160,6 +160,16 @@ class SubGraph : Node {
 		}
 	}
 
+	T get(T)() if(is(T == DummyNode)) {
+		if(name in this.nodes) {
+			return cast(T)this.nodes[name];
+		} else {
+			T ret = new T(this);
+			this.nodes[name] = ret;
+			return ret;
+		}
+	}
+
 	override bool isAddingNodesAllowed() const {
 		assert(this.parent !is null);
 		return this.parent.isAddingNodesAllowed();
