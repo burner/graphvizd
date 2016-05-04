@@ -70,7 +70,11 @@ class Writer(O) {
 		this.indent++;
 
 		this.formatPrefixClusterName();
-		gformat("_%s [\n", n.name);
+		if(this.nameStack.empty) {
+			gformat("%s [\n", n.name);
+		} else {
+			gformat("_%s [\n", n.name);
+		}
 		this.writeLabel(n.label);
 		this.writeShape(n.shape);
 		gformat(this.indent, "]\n");

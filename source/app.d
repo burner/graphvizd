@@ -19,6 +19,12 @@ void main() {
 	n.label = `"Node"`;
 	n.shape = "box";
 
+	auto n2 = g.get!Node("otherNode");
+	n2.label = "otherNode";
+	auto n3 = g.get!Node("stupidNode");
+	n3.label = "stupidNode";
+	auto e = g.get!Edge("a.b.node", "otherNode");
+	auto e2 = g.get!Edge("a.b", "stupidNode");
 
 	auto o = stderr.lockingTextWriter();
 	auto w = new Writer!(typeof(o))(g, o, "Some\nMulti\n\tLine\n Description");
