@@ -71,13 +71,16 @@ class Graph : NodeInterface {
 		return app.data;
 	}
 
-	T get(T)(in string name, in string from, in string to) 
+	T get(T)(in string name, in string from = "", in string to = "") 
 			if(is(T == Edge)) 
 	{
+		import std.array : empty;
 		firstEdgeCreated = true;
 		if(name in this.edges) {
 			return cast(T)this.edges[name];
 		} else {
+			assert(!from.empty);
+			assert(!to.empty);
 			T ret = new T(name, this.deapest(from), this.deapest(to));
 			this.edges[name] = ret;
 			return ret;
