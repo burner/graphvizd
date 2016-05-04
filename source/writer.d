@@ -123,8 +123,8 @@ class Writer(O) {
 		if(fromIsSubgraph && toIsSubgraph) {
 			gformat(this.indent, "%s -> %s [ltail=%s,lhead=%s]\n", 
 				e.from, e.to, 
-				e.to[0 .. $ - DummyString.length - 1],
-				e.from[0 .. $ - DummyString.length - 1]
+				e.from[0 .. $ - DummyString.length - 1],
+				e.to[0 .. $ - DummyString.length - 1]
 			);
 		} else if(!fromIsSubgraph && toIsSubgraph) {
 			gformat(this.indent, "%s -> %s [lhead=%s]\n", 

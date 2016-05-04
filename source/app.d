@@ -22,6 +22,14 @@ void main() {
 		</tr>
 		</table>
 		>`;
+	auto c = a.get!SubGraph("c");
+	c.label =`<
+		<table>
+		<tr>
+		<td> Module C</td>
+		</tr>
+		</table>
+		>`;
 	auto n = b.get!Node("node");
 	n.label = `"Node1"`;
 	n.shape = "box";
@@ -33,6 +41,9 @@ void main() {
 
 	auto e = g.get!Edge("edge1", "a.b.node", "otherNode");
 	auto e2 = g.get!Edge("edge2", "a.b", "stupidNode");
+	auto e3 = g.get!Edge("edge3", "a.c", "a.b");
+	auto e4 = g.get!Edge("edge4", "otherNode", "stupidNode");
+	auto e5 = g.get!Edge("edge5", "stupidNode", "a.c");
 
 	//auto o = stderr.lockingTextWriter();
 	auto f = File("test.dot", "w");
