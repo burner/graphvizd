@@ -183,6 +183,8 @@ class Edge {
 	string label;
 	string arrowStyleFrom;
 	string arrowStyleTo;
+	string labelFrom;
+	string labelTo;
 	string edgeStyle;
 
 	this(in string name, in string from, in string to) {

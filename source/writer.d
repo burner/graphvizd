@@ -150,6 +150,12 @@ class Writer(O) {
 		if(!e.arrowStyleTo.empty) {
 			gformat(",arrowtail=%s", e.arrowStyleTo);
 		}
+		if(!e.labelFrom.empty) {
+			gformat(",headlabel=%s", e.labelFrom);
+		}
+		if(!e.labelTo.empty) {
+			gformat(",taillabel=%s", e.labelTo);
+		}
 		gformat(this.indent, "]\n");
 	}
 
