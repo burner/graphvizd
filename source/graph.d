@@ -61,7 +61,7 @@ class Graph : NodeInterface {
 		}
 
 		SubGraph lastSG = cast(SubGraph)next;
-		if(!split.empty || lastSG !is null) {
+		if(!split.empty && lastSG !is null) {
 			DummyNode dn = lastSG.get!DummyNode(DummyString);
 			assert(dn !is null);
 			//app.put(dn.name);

@@ -120,27 +120,37 @@ class Writer(O) {
 		bool fromIsSubgraph = e.from.endsWith("__dummy");
 		bool toIsSubgraph = e.to.endsWith("__dummy");
 
+		gformat(this.indent, "%s -> %s [shape=none",
+			prepareName(e.from), prepareName(e.to));
+		if(!e.label.empty) {
+			gformat("\n");
+			writeLabel(e.label);
+			gformat("\n");
+		}
 		if(fromIsSubgraph && toIsSubgraph) {
-			gformat(this.indent, "%s -> %s [ltail=%s,lhead=%s]\n", 
-				prepareName(e.from), prepareName(e.to), 
+			gformat(",ltail=%s,lhead=%s", 
 				prepareName(e.from[0 .. $ - DummyString.length - 1]),
 				prepareName(e.to[0 .. $ - DummyString.length - 1])
 			);
 		} else if(!fromIsSubgraph && toIsSubgraph) {
-			gformat(this.indent, "%s -> %s [lhead=%s]\n", 
-				prepareName(e.from), prepareName(e.to), 
+			gformat(",lhead=%s", 
 				prepareName(e.to[0 .. $ - DummyString.length - 1]),
 			);
 		} else if(fromIsSubgraph && !toIsSubgraph) {
-			gformat(this.indent, "%s -> %s [ltail=%s]\n", 
-				prepareName(e.from), prepareName(e.to), 
+			gformat(",ltail=%s", 
 				prepareName(e.from[0 .. $ - DummyString.length - 1])
 			);
-		} else {
-			gformat(this.indent, "%s -> %s\n", 
-				prepareName(e.from), prepareName(e.to),
-			);
+		} 
+		if(!e.edgeStyle.empty) {
+			gformat(",style=%s", e.edgeStyle);
 		}
+		if(!e.arrowStyleFrom.empty) {
+			gformat(",arrowhead=%s", e.arrowStyleFrom);
+		}
+		if(!e.arrowStyleTo.empty) {
+			gformat(",arrowtail=%s", e.arrowStyleTo);
+		}
+		gformat(this.indent, "]\n");
 	}
 
 	final void writeGraphConfig() {
