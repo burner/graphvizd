@@ -29,14 +29,12 @@ class Writer(O) {
 		gformat("digraph G {\n");
 		gformat(1, "compound=true;\n");
 		this.writeGraphConfig();
-		foreach(key; this.g.nodes.keys()) {
-			NodeInterface n = this.g.nodes[key];
+		foreach(const(string) key, NodeInterface n; this.g.nodes) {
 			this.write(n);
 		}	
 
 		this.indent++;
-		foreach(key; this.g.edges.keys()) {
-			Edge n = this.g.edges[key];
+		foreach(const(string) key, Edge n; this.g.edges) {
 			this.write(n);
 		}
 		this.indent--;
@@ -70,8 +68,7 @@ class Writer(O) {
 		this.writeLabel(sg.label);
 		this.writeShape(sg.shape);
 		this.writeAttributes(sg.attributes);
-		foreach(it; sg.nodes.keys()) {
-			NodeInterface n = sg.nodes[it];
+		foreach(const(string) it, NodeInterface n; sg.nodes) {
 			this.write(n);
 		}
 

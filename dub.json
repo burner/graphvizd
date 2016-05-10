@@ -4,6 +4,6 @@
 	"copyright": "Copyright © 2016, burner",
 	"authors": ["burner"],
 	"dependencies": {
-		"emsi_containers": "~>0.4.2"
+		"emsi_containers": ">=0.4.3"
 	}
 }
