@@ -87,6 +87,28 @@ class Graph : NodeInterface {
 			return ret;
 		}
 	}
+
+	T getUnique(T)(in string name, in string from = "", in string to = "") 
+			if(is(T == Edge)) 
+	{
+		import std.array : empty;
+		firstEdgeCreated = true;
+		if(name in this.edges) {
+			return cast(T)this.edges[name];
+		} else {
+			assert(!from.empty);
+			assert(!to.empty);
+			auto f = this.deapest(from);
+			auto t = this.deapest(to);
+			if(f == t) {
+				return null;
+			}
+
+			T ret = new T(name, f, t);
+			this.edges[name] = ret;
+			return ret;
+		}
+	}
 			
 	T get(T)(in string name) if(!is(T == Edge)) {
 		if(name in this.nodes) {
