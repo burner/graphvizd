@@ -1,5 +1,6 @@
 module graph;
 
+import std.experimental.logger;
 import std.typecons : Rebindable, RefCounted;
 import containers.hashmap;
 import containers.dynamicarray;
@@ -40,7 +41,6 @@ class Graph : NodeInterface {
 
 		Rebindable!(const Node) next = cast(const Node)this.nodes[split.front];
 		auto app = appender!string();
-		//app.put(split.front);
 		realPut(next.get(), app);
 		split.removeFront();
 
@@ -51,7 +51,6 @@ class Graph : NodeInterface {
 			} else {
 				if(split.front in sg.nodes) {
 					next = cast(const Node)sg.nodes[split.front];
-					//app.put(split.front);
 					realPut(next.get(), app);
 					split.removeFront();
 				} else {
@@ -60,12 +59,11 @@ class Graph : NodeInterface {
 			}
 		}
 
-		SubGraph lastSG = cast(SubGraph)next;
-		//if(!split.empty && lastSG !is null) {
+		const SubGraph cLastSG = cast(const SubGraph)next.get();
+		SubGraph lastSG = cast(SubGraph)cLastSG;
 		if(lastSG !is null) {
 			DummyNode dn = lastSG.get!DummyNode(DummyString);
 			assert(dn !is null);
-			//app.put(dn.name);
 			realPut(dn, app);
 		}
 
@@ -100,6 +98,7 @@ class Graph : NodeInterface {
 			assert(!to.empty);
 			auto f = this.deapest(from);
 			auto t = this.deapest(to);
+			logf("%s %s", f, t);
 			if(f == t) {
 				return null;
 			}

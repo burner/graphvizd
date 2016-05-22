@@ -117,24 +117,25 @@ class Writer(O) {
 		bool fromIsSubgraph = e.from.endsWith("__dummy");
 		bool toIsSubgraph = e.to.endsWith("__dummy");
 
-		gformat(this.indent, "%s -> %s [shape=none",
-			prepareName(e.from), prepareName(e.to));
+		gformat(this.indent, "%s -> %s [shape=none\n",
+			prepareName(e.from), prepareName(e.to)
+		);
 		if(!e.label.empty) {
 			gformat("\n");
 			writeLabel(e.label);
 			gformat("\n");
 		}
 		if(fromIsSubgraph && toIsSubgraph) {
-			gformat(",ltail=%s,lhead=%s", 
+			gformat(this.indent+1, ",ltail=%s,lhead=%s", 
 				prepareName(e.from[0 .. $ - DummyString.length - 1]),
 				prepareName(e.to[0 .. $ - DummyString.length - 1])
 			);
 		} else if(!fromIsSubgraph && toIsSubgraph) {
-			gformat(",lhead=%s", 
+			gformat(this.indent+1, ",lhead=%s", 
 				prepareName(e.to[0 .. $ - DummyString.length - 1]),
 			);
 		} else if(fromIsSubgraph && !toIsSubgraph) {
-			gformat(",ltail=%s", 
+			gformat(this.indent+1,",ltail=%s", 
 				prepareName(e.from[0 .. $ - DummyString.length - 1])
 			);
 		} 
