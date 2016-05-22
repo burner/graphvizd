@@ -117,11 +117,11 @@ class Writer(O) {
 		bool fromIsSubgraph = e.from.endsWith("__dummy");
 		bool toIsSubgraph = e.to.endsWith("__dummy");
 
-		gformat(this.indent, "%s -> %s [shape=none\n",
+		gformat(this.indent, "%s -> %s\n",
 			prepareName(e.from), prepareName(e.to)
 		);
+		gformat(this.indent, "[\n");
 		if(!e.label.empty) {
-			gformat("\n");
 			writeLabel(e.label);
 			gformat("\n");
 		}
@@ -140,19 +140,19 @@ class Writer(O) {
 			);
 		} 
 		if(!e.edgeStyle.empty) {
-			gformat(",style=%s", e.edgeStyle);
+			gformat(this.indent+1,",style=%s\n", e.edgeStyle);
 		}
 		if(!e.arrowStyleFrom.empty) {
-			gformat(",arrowhead=%s", e.arrowStyleFrom);
+			gformat(this.indent+1,",arrowhead=%s\n", e.arrowStyleFrom);
 		}
 		if(!e.arrowStyleTo.empty) {
-			gformat(",arrowtail=%s", e.arrowStyleTo);
+			gformat(this.indent+1,",arrowtail=%s\n", e.arrowStyleTo);
 		}
 		if(!e.labelFrom.empty) {
-			gformat(",headlabel=%s", e.labelFrom);
+			gformat(this.indent+1,",headlabel=%s\n", e.labelFrom);
 		}
 		if(!e.labelTo.empty) {
-			gformat(",taillabel=%s", e.labelTo);
+			gformat(this.indent+1,",taillabel=%s\n", e.labelTo);
 		}
 		gformat(this.indent, "]\n");
 	}
