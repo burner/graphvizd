@@ -123,19 +123,18 @@ class Writer(O) {
 		gformat(this.indent, "[\n");
 		if(!e.label.empty) {
 			writeLabel(e.label);
-			gformat("\n");
 		}
 		if(fromIsSubgraph && toIsSubgraph) {
-			gformat(this.indent+1, ",ltail=%s,lhead=%s", 
+			gformat(this.indent+1, ",ltail=%s,lhead=%s\n", 
 				prepareName(e.from[0 .. $ - DummyString.length - 1]),
 				prepareName(e.to[0 .. $ - DummyString.length - 1])
 			);
 		} else if(!fromIsSubgraph && toIsSubgraph) {
-			gformat(this.indent+1, ",lhead=%s", 
+			gformat(this.indent+1, ",lhead=%s\n", 
 				prepareName(e.to[0 .. $ - DummyString.length - 1]),
 			);
 		} else if(fromIsSubgraph && !toIsSubgraph) {
-			gformat(this.indent+1,",ltail=%s", 
+			gformat(this.indent+1,",ltail=%s\n", 
 				prepareName(e.from[0 .. $ - DummyString.length - 1])
 			);
 		} 
@@ -154,6 +153,7 @@ class Writer(O) {
 		if(!e.labelTo.empty) {
 			gformat(this.indent+1,",taillabel=%s\n", e.labelTo);
 		}
+		gformat(this.indent+1, ",dir=\"both\"\n");
 		gformat(this.indent, "]\n");
 	}
 
