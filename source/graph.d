@@ -2,9 +2,6 @@ module graph;
 
 import std.experimental.logger;
 import std.typecons : Rebindable, RefCounted;
-import containers.hashmap;
-import containers.dynamicarray;
-import containers.cyclicbuffer;
 
 public immutable DummyString = "__dummy";
 
@@ -13,13 +10,14 @@ interface NodeInterface {
 }
 
 class Graph : NodeInterface {
-	HashMap!(string,NodeInterface) nodes;
-	HashMap!(string,Edge) edges;
+	NodeInterface[string] nodes;
+	Edge[string] edges;
 	bool firstEdgeCreated = false;
 
 	string deapest(string path) const {
 		import std.array : appender, Appender, empty;
 		import std.stdio : writeln;
+		import containers.cyclicbuffer;
 		void realPut(const Node ni, ref Appender!string app) {
 			import std.format : formattedWrite;
 			if(!app.data.empty) {
@@ -156,7 +154,7 @@ class DummyNode : Node {
 }
 
 class SubGraph : Node {
-	HashMap!(string,NodeInterface) nodes;
+	NodeInterface[string] nodes;	
 
 	this(in string name, NodeInterface parent) {
 		assert(parent !is null);
