@@ -13,11 +13,11 @@ class Writer(O) {
 
 	Graph g;
 	string config;
-	O output;
+	O* output;
 	uint indent;
 	DynamicArray!string nameStack;
 
-	this(O)(Graph g, O output, string config = "") {
+	this(O)(Graph g, O* output, string config = "") {
 		this.g = g;
 		this.output = output;
 		this.config = config;
@@ -284,7 +284,7 @@ unittest {
 	//auto o = stderr.lockingTextWriter();
 	auto f = File("test.dot", "w");
 	auto o = f.lockingTextWriter();
-	auto w = new Writer!(typeof(o))(g, o, "rankdir=LR");
+	auto w = new Writer!(typeof(o))(g, &o, "rankdir=LR");
 	//f.close();
 
 	version(linux) {
