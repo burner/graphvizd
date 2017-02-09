@@ -285,11 +285,9 @@ unittest {
 	auto f = File("test.dot", "w");
 	auto o = f.lockingTextWriter();
 	auto w = new Writer!(typeof(o))(g, o, "rankdir=LR");
-	f.close();
+	//f.close();
 
 	version(linux) {
 		import std.process;
 		auto pid = spawnProcess(["dot", "-T", "png", "test.dot", "-o", "test.png"]);
 		wait(pid);
-	}
-}
