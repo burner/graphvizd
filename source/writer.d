@@ -291,3 +291,5 @@ unittest {
 		import std.process;
 		auto pid = spawnProcess(["dot", "-T", "png", "test.dot", "-o", "test.png"]);
 		wait(pid);
+	}
+}
